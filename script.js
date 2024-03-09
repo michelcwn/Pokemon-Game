@@ -124,8 +124,13 @@ const rectangularCollision = function ({ rectangle1, rectangle2 }) {
   );
 };
 
+const battle = {
+  initiated: false,
+};
+
 const animate = function () {
-  window.requestAnimationFrame(animate);
+  const animationId = window.requestAnimationFrame(animate);
+
   background.draw();
   boundaries.forEach((boundary) => {
     boundary.draw();
@@ -136,6 +141,12 @@ const animate = function () {
   player.draw();
   foreground.draw();
 
+  let moving = true;
+  player.moving = false;
+
+  console.log(animationId);
+  if (battle.initiated) return;
+  //activate battle
   if (keys.z.pressed || keys.q.pressed || keys.s.pressed || keys.d.pressed) {
     for (let i = 0; i < battleZones.length; i++) {
       const battleZone = battleZones[i];
@@ -159,9 +170,27 @@ const animate = function () {
           rectangle2: battleZone,
         }) &&
         overlappingArea > (player.width * player.height) / 2 &&
-        Math.random() < 0.2
+        Math.random() < 0.1
       ) {
-        console.log("battle zone colliding");
+        console.log("activate battle");
+        //desactivate current animation loop
+        window.cancelAnimationFrame(animationId);
+        battle.initiated = true;
+        gsap.to("#overlappingDiv", {
+          opacity: 1,
+          repeat: 4,
+          yoyo: true,
+          duration: 0.4,
+          onComplete() {
+            gsap.to("#overlappingDiv", {
+              opacity: 1,
+              duration: 0.4,
+            });
+
+            //activate a new animation loop
+            animateBattle();
+          },
+        });
         break;
       }
     }
@@ -170,8 +199,6 @@ const animate = function () {
   // Définir la source de playerImage après avoir établi le gestionnaire onload
 
   // boundaries du player
-  let moving = true;
-  player.moving = false;
 
   if (keys.z.pressed && lastKey === "z") {
     player.moving = true;
@@ -289,7 +316,12 @@ const animate = function () {
       });
   }
 };
+
 animate();
+const animateBattle = function () {
+  window.requestAnimationFrame(animateBattle);
+  console.log("animating battle");
+};
 
 let lastKey = "";
 window.addEventListener("keydown", function (e) {
