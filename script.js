@@ -73,6 +73,7 @@ const player = new Sprite({
   image: playerDownImage,
   frames: {
     max: 4,
+    hold: 10,
   },
   sprites: {
     up: playerUpImage,
@@ -142,7 +143,7 @@ const animate = function () {
   foreground.draw();
 
   let moving = true;
-  player.moving = false;
+  player.animate = false;
 
   console.log(animationId);
   if (battle.initiated) return;
@@ -207,7 +208,7 @@ const animate = function () {
   // boundaries du player
 
   if (keys.z.pressed && lastKey === "z") {
-    player.moving = true;
+    player.animate = true;
     player.image = player.sprites.up;
 
     for (let i = 0; i < boundaries.length; i++) {
@@ -236,7 +237,7 @@ const animate = function () {
 
     // q
   } else if (keys.q.pressed && lastKey === "q") {
-    player.moving = true;
+    player.animate = true;
     player.image = player.sprites.left;
 
     for (let i = 0; i < boundaries.length; i++) {
@@ -265,7 +266,7 @@ const animate = function () {
 
     //s
   } else if (keys.s.pressed && lastKey === "s") {
-    player.moving = true;
+    player.animate = true;
     player.image = player.sprites.down;
 
     for (let i = 0; i < boundaries.length; i++) {
@@ -294,7 +295,7 @@ const animate = function () {
 
     //d
   } else if (keys.d.pressed && lastKey === "d") {
-    player.moving = true;
+    player.animate = true;
     player.image = player.sprites.right;
 
     for (let i = 0; i < boundaries.length; i++) {
@@ -335,9 +336,41 @@ const battleBackground = new Sprite({
   image: battleBackgroundImage,
 });
 
+const draggleImage = new Image();
+draggleImage.src = "./img/draggleSprite.png";
+const draggle = new Sprite({
+  position: {
+    x: 800,
+    y: 100,
+  },
+  image: draggleImage,
+  frames: {
+    max: 4,
+    hold: 20,
+  },
+  animate: true,
+});
+
+const embyImage = new Image();
+embyImage.src = "./img/embySprite.png";
+const emby = new Sprite({
+  position: {
+    x: 280,
+    y: 325,
+  },
+  image: embyImage,
+  frames: {
+    max: 4,
+    hold: 20,
+  },
+  animate: true,
+});
+
 const animateBattle = function () {
   battleAnimationId = window.requestAnimationFrame(animateBattle);
   battleBackground.draw();
+  draggle.draw();
+  emby.draw();
 
   console.log(battleAnimationId);
 };
