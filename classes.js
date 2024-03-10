@@ -19,7 +19,7 @@ class Sprite {
     this.animate = animate;
     this.sprites = sprites;
     this.opacity = 1;
-    this.health = 90;
+    this.health = 100;
     this.isEnemy = isEnemy;
   }
 
@@ -70,7 +70,7 @@ class Sprite {
         onComplete: () => {
           // ennemy get hit here
           gsap.to(healthBar, {
-            width: recipient.health + "%",
+            width: this.health - attack.damage + "%",
           });
 
           gsap.to(recipient.position, {
