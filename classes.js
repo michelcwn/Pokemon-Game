@@ -7,6 +7,7 @@ class Sprite {
     sprites,
     animate = false,
     isEnemy = false,
+    rotation = 0,
   }) {
     this.position = position;
     this.image = image;
@@ -21,11 +22,21 @@ class Sprite {
     this.opacity = 1;
     this.health = 100;
     this.isEnemy = isEnemy;
+    this.rotation = rotation;
   }
 
   draw() {
     // context.drawImage(this.image, this.position.x, this.position.y);
     context.save();
+    context.translate(
+      this.position.x + this.width / 2,
+      this.position.y + this.height / 2
+    );
+    context.rotate(this.rotation);
+    context.translate(
+      -this.position.x - this.width / 2,
+      -this.position.y - this.height / 2
+    );
     context.globalAlpha = this.opacity;
     context.drawImage(
       this.image,
@@ -52,46 +63,96 @@ class Sprite {
     }
   }
 
-  attack({ attack, recipient }) {
-    const tl = gsap.timeline();
-
-    this.health -= attack.damage;
-
-    let movementDistance = 20;
-    if (this.isEnemy) movementDistance = -20;
-
+  attack({ attack, recipient, renderedSprites }) {
     let healthBar = "#enemyHealthBar";
     if (this.isEnemy) healthBar = "#playerHealthBar";
+    this.health -= attack.damage;
 
-    tl.to(this.position, {
-      x: this.position.x - movementDistance,
-    })
-      .to(this.position, {
-        x: this.position.x + movementDistance * 2,
-        duration: 0.1,
-        onComplete: () => {
-          // ennemy get hit here
-          gsap.to(healthBar, {
-            width: this.health + "%",
-          });
+    let rotation = 1;
+    if (this.isEnemy) rotation = -2.5;
+    switch (attack.name) {
+      case "Fireball":
+        const fireballImage = new Image();
+        fireballImage.src = "./img/fireball.png";
+        const fireball = new Sprite({
+          position: {
+            x: this.position.x,
+            y: this.position.y,
+          },
+          image: fireballImage,
+          frames: {
+            max: 4,
+            hold: 10,
+          },
+          animate: true,
+          rotation,
+        });
 
-          gsap.to(recipient.position, {
-            x: recipient.position.x + 10,
-            yoyo: true,
-            repeat: 5,
-            duration: 0.08,
+        renderedSprites.splice(1, 0, fireball);
+
+        gsap.to(fireball.position, {
+          x: recipient.position.x,
+          y: recipient.position.y,
+          onComplete: () => {
+            // ennemy get hit here
+            gsap.to(healthBar, {
+              width: this.health + "%",
+            });
+
+            gsap.to(recipient.position, {
+              x: recipient.position.x + 10,
+              yoyo: true,
+              repeat: 5,
+              duration: 0.08,
+            });
+            gsap.to(recipient, {
+              opacity: 0,
+              repeat: 7,
+              yoyo: true,
+              duration: 0.08,
+            });
+            renderedSprites.splice(1, 1);
+          },
+        });
+
+        break;
+      case "Tackle":
+        const tl = gsap.timeline();
+
+        let movementDistance = 20;
+        if (this.isEnemy) movementDistance = -20;
+
+        tl.to(this.position, {
+          x: this.position.x - movementDistance,
+        })
+          .to(this.position, {
+            x: this.position.x + movementDistance * 2,
+            duration: 0.1,
+            onComplete: () => {
+              // ennemy get hit here
+              gsap.to(healthBar, {
+                width: this.health + "%",
+              });
+
+              gsap.to(recipient.position, {
+                x: recipient.position.x + 10,
+                yoyo: true,
+                repeat: 5,
+                duration: 0.08,
+              });
+              gsap.to(recipient, {
+                opacity: 0,
+                repeat: 7,
+                yoyo: true,
+                duration: 0.08,
+              });
+            },
+          })
+          .to(this.position, {
+            x: this.position.x,
           });
-          gsap.to(recipient, {
-            opacity: 0,
-            repeat: 7,
-            yoyo: true,
-            duration: 0.08,
-          });
-        },
-      })
-      .to(this.position, {
-        x: this.position.x,
-      });
+        break;
+    }
   }
 }
 
