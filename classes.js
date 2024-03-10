@@ -55,6 +55,8 @@ class Sprite {
   attack({ attack, recipient }) {
     const tl = gsap.timeline();
 
+    this.health -= attack.damage;
+
     let movementDistance = 20;
     if (this.isEnemy) movementDistance = -20;
 
@@ -70,7 +72,7 @@ class Sprite {
         onComplete: () => {
           // ennemy get hit here
           gsap.to(healthBar, {
-            width: this.health - attack.damage + "%",
+            width: this.health + "%",
           });
 
           gsap.to(recipient.position, {
