@@ -145,7 +145,6 @@ const animate = function () {
   let moving = true;
   player.animate = false;
 
-  console.log(animationId);
   if (battle.initiated) return;
   //activate battle
   if (keys.z.pressed || keys.q.pressed || keys.s.pressed || keys.d.pressed) {
@@ -254,7 +253,6 @@ const animate = function () {
           },
         })
       ) {
-        console.log("colliding");
         moving = false;
         break;
       }
@@ -283,7 +281,6 @@ const animate = function () {
           },
         })
       ) {
-        console.log("colliding");
         moving = false;
         break;
       }
@@ -312,7 +309,6 @@ const animate = function () {
           },
         })
       ) {
-        console.log("colliding");
         moving = false;
         break;
       }
@@ -364,6 +360,7 @@ const emby = new Sprite({
     hold: 20,
   },
   animate: true,
+  isEnemy: true,
 });
 
 const animateBattle = function () {
@@ -371,11 +368,22 @@ const animateBattle = function () {
   battleBackground.draw();
   draggle.draw();
   emby.draw();
-
-  console.log(battleAnimationId);
 };
 
 animateBattle();
+
+document.querySelectorAll("button").forEach((button) => {
+  button.addEventListener("click", function () {
+    emby.attack({
+      attack: {
+        name: "Tackle",
+        damage: 10,
+        type: "Normal",
+      },
+      recipient: draggle,
+    });
+  });
+});
 
 let lastKey = "";
 window.addEventListener("keydown", function (e) {

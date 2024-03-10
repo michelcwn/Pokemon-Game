@@ -6,6 +6,7 @@ class Sprite {
     frames = { max: 1, hold: 10 },
     sprites,
     animate = false,
+    isEnemy = false,
   }) {
     this.position = position;
     this.image = image;
@@ -17,10 +18,15 @@ class Sprite {
     };
     this.animate = animate;
     this.sprites = sprites;
+    this.opacity = 1;
+    this.health = 90;
+    this.isEnemy = isEnemy;
   }
 
   draw() {
     // context.drawImage(this.image, this.position.x, this.position.y);
+    context.save();
+    context.globalAlpha = this.opacity;
     context.drawImage(
       this.image,
       this.frames.val * this.width,
@@ -33,6 +39,8 @@ class Sprite {
       this.image.height
     );
 
+    context.restore();
+
     if (!this.animate) return;
     if (this.frames.max > 1) {
       this.frames.elapsed++;
@@ -42,6 +50,46 @@ class Sprite {
       if (this.frames.val < this.frames.max - 1) this.frames.val++;
       else this.frames.val = 0;
     }
+  }
+
+  attack({ attack, recipient }) {
+    const tl = gsap.timeline();
+
+    let movementDistance = 20;
+    if (this.isEnemy) movementDistance = -20;
+
+    let healthBar = "#enemyHealthBar";
+    if (this.isEnemy) healthBar = "#playerHealthBar";
+
+    tl.to(this.position, {
+      x: this.position.x - movementDistance,
+    })
+      .to(this.position, {
+        x: this.position.x + movementDistance * 2,
+        duration: 0.1,
+        onComplete: () => {
+          // ennemy get hit here
+          gsap.to(healthBar, {
+            width: recipient.health + "%",
+          });
+
+          gsap.to(recipient.position, {
+            x: recipient.position.x + 10,
+            yoyo: true,
+            repeat: 5,
+            duration: 0.08,
+          });
+          gsap.to(recipient, {
+            opacity: 0,
+            repeat: 7,
+            yoyo: true,
+            duration: 0.08,
+          });
+        },
+      })
+      .to(this.position, {
+        x: this.position.x,
+      });
   }
 }
 
