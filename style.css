@@ -1,3 +1,12 @@
+@font-face {
+  font-family: "PressStart2P";
+  src: url(PressStart2P-Regular.ttf) format("truetype");
+}
+
+* {
+  font-family: "PressStart2P", sans-serif;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -15,7 +24,7 @@ body {
   position: relative;
 }
 
-.battle__screen {
+.battle-screen {
   background-color: #000000;
 
   position: absolute;
@@ -25,6 +34,45 @@ body {
   bottom: 0;
 
   opacity: 0;
-
   pointer-events: none;
+}
+
+.attack-bar {
+  display: flex;
+  background-color: #ffffff;
+  height: 140px;
+  position: absolute;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  border-top: 4px solid black;
+}
+
+.attack-bar__skills {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 66%;
+}
+
+.attack-bar__button {
+  border: 0;
+  cursor: pointer;
+}
+
+.attack-bar__button:hover {
+  background-color: #ccc;
+  font-size: 16px;
+}
+
+.attack-bar__type {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 34%;
+  border-left: 4px solid black;
+}
+
+.attack-bar__title {
+  margin: 0;
+  font-size: 16px;
 }
