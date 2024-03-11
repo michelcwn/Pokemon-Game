@@ -14,15 +14,21 @@ for (let i = 0; i < battleZonesData.length; i += 70) {
   battleZonesMap.push(battleZonesData.slice(i, 70 + i));
 }
 
+// const charactersMap = [];
+// for (let i = 0; i < charactersMapData.length; i += 70) {
+//   charactersMap.push(charactersMapData.slice(i, 70 + i));
+// }
+// console.log(charactersMap);
+
 const boundaries = [];
 const offset = {
-  x: -740,
+  x: -735,
   y: -650,
 };
+
 collisionsMap.forEach((row, i) => {
   row.forEach((symbol, j) => {
     if (symbol === 1025)
-      // 1025 = collision dans le JSON
       boundaries.push(
         new Boundary({
           position: {
@@ -35,10 +41,10 @@ collisionsMap.forEach((row, i) => {
 });
 
 const battleZones = [];
+
 battleZonesMap.forEach((row, i) => {
   row.forEach((symbol, j) => {
     if (symbol === 1025)
-      // 1025 = collision dans le JSON
       battleZones.push(
         new Boundary({
           position: {
@@ -58,17 +64,20 @@ foregroundImage.src = "./img/foregroundObjects.png";
 
 const playerDownImage = new Image();
 playerDownImage.src = "./img/playerDown.png";
+
 const playerUpImage = new Image();
 playerUpImage.src = "./img/playerUp.png";
+
 const playerLeftImage = new Image();
 playerLeftImage.src = "./img/playerLeft.png";
+
 const playerRightImage = new Image();
 playerRightImage.src = "./img/playerRight.png";
 
 const player = new Sprite({
   position: {
-    x: canvas.width / 2 - 192 / 4 / 2, // largeur image original
-    y: canvas.height / 2 - 68 / 2, // hauteur image original
+    x: canvas.width / 2 - 192 / 4 / 2,
+    y: canvas.height / 2 - 68 / 2,
   },
   image: playerDownImage,
   frames: {
@@ -150,8 +159,6 @@ const animate = function () {
   if (keys.z.pressed || keys.q.pressed || keys.s.pressed || keys.d.pressed) {
     for (let i = 0; i < battleZones.length; i++) {
       const battleZone = battleZones[i];
-      //Math.max pour la valeur a gauche, Math.min pour celle à droite
-      //valeur de x de player et x de battleZone
       const overlappingArea =
         (Math.min(
           player.position.x + player.width,
@@ -163,18 +170,21 @@ const animate = function () {
           battleZone.position.y + battleZone.height
         ) -
           Math.max(player.position.y, battleZone.position.y));
-
       if (
         rectangularCollision({
           rectangle1: player,
           rectangle2: battleZone,
         }) &&
         overlappingArea > (player.width * player.height) / 2 &&
-        Math.random() < 0.1
+        Math.random() < 0.05
       ) {
-        console.log("activate battle");
-        //desactivate current animation loop
+        // deactivate current animation loop
         window.cancelAnimationFrame(animationId);
+
+        audio.Map.stop();
+        audio.initBattle.play();
+        audio.battle.play();
+
         battle.initiated = true;
         gsap.to("#overlappingDiv", {
           opacity: 1,
@@ -358,5 +368,13 @@ window.addEventListener("keyup", function (e) {
     case "d":
       keys.d.pressed = false;
       break;
+  }
+});
+
+let clicked = false;
+addEventListener("click", () => {
+  if (!clicked) {
+    audio.Map.play();
+    clicked = true;
   }
 });

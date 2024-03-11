@@ -14,7 +14,7 @@ let renderedSprites;
 let battleAnimationId;
 let queue;
 
-const initBattle = function () {
+function initBattle() {
   document.querySelector("#userInterface").style.display = "block";
   document.querySelector("#dialogueBox").style.display = "none";
   document.querySelector("#enemyHealthBar").style.width = "100%";
@@ -32,9 +32,9 @@ const initBattle = function () {
     document.querySelector("#attacksBox").append(button);
   });
 
-  // handler for buttons (attack)
+  // our event listeners for our buttons (attack)
   document.querySelectorAll("button").forEach((button) => {
-    button.addEventListener("click", function (e) {
+    button.addEventListener("click", (e) => {
       const selectedAttack = attacks[e.currentTarget.innerHTML];
       emby.attack({
         attack: selectedAttack,
@@ -58,12 +58,15 @@ const initBattle = function () {
               gsap.to("#overlappingDiv", {
                 opacity: 0,
               });
+
               battle.initiated = false;
+              audio.Map.play();
             },
           });
         });
       }
 
+      // draggle or enemy attacks right here
       const randomAttack =
         draggle.attacks[Math.floor(Math.random() * draggle.attacks.length)];
 
@@ -73,51 +76,58 @@ const initBattle = function () {
           recipient: emby,
           renderedSprites,
         });
+
         if (emby.health <= 0) {
           queue.push(() => {
             emby.faint();
           });
-        }
-        queue.push(() => {
-          // fade back to black
-          gsap.to("#overlappingDiv", {
-            opacity: 1,
-            onComplete: () => {
-              cancelAnimationFrame(battleAnimationId);
-              animate();
-              document.querySelector("#userInterface").style.display = "none";
 
-              gsap.to("#overlappingDiv", {
-                opacity: 0,
-              });
-              battle.initiated = false;
-            },
+          queue.push(() => {
+            // fade back to black
+            gsap.to("#overlappingDiv", {
+              opacity: 1,
+              onComplete: () => {
+                cancelAnimationFrame(battleAnimationId);
+                animate();
+                document.querySelector("#userInterface").style.display = "none";
+
+                gsap.to("#overlappingDiv", {
+                  opacity: 0,
+                });
+
+                battle.initiated = false;
+                audio.Map.play();
+              },
+            });
           });
-        });
+        }
       });
     });
 
-    button.addEventListener("mouseenter", function (e) {
+    button.addEventListener("mouseenter", (e) => {
       const selectedAttack = attacks[e.currentTarget.innerHTML];
       document.querySelector("#attackType").innerHTML = selectedAttack.type;
       document.querySelector("#attackType").style.color = selectedAttack.color;
     });
   });
-};
+}
 
-const animateBattle = function () {
+function animateBattle() {
   battleAnimationId = window.requestAnimationFrame(animateBattle);
   battleBackground.draw();
+
+  console.log(battleAnimationId);
 
   renderedSprites.forEach((sprite) => {
     sprite.draw();
   });
-};
+}
 
-initBattle();
-animateBattle();
+animate();
+// initBattle()
+// animateBattle()
 
-document.querySelector("#dialogueBox").addEventListener("click", function (e) {
+document.querySelector("#dialogueBox").addEventListener("click", (e) => {
   if (queue.length > 0) {
     queue[0]();
     queue.shift();
