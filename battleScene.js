@@ -41,20 +41,34 @@ document.querySelectorAll("button").forEach((button) => {
       recipient: draggle,
       renderedSprites,
     });
+
+    if (draggle.health <= 0) {
+      queue.push(() => {
+        draggle.faint();
+      });
+    }
+
+    const randomAttack =
+      draggle.attacks[Math.floor(Math.random() * draggle.attacks.length)];
+
     queue.push(() => {
       draggle.attack({
-        attack: attacks.Tackle,
+        attack: randomAttack,
         recipient: emby,
         renderedSprites,
       });
+      if (emby.health <= 0) {
+        queue.push(() => {
+          emby.faint();
+        });
+      }
     });
-    queue.push(() => {
-      draggle.attack({
-        attack: attacks.Fireball,
-        recipient: emby,
-        renderedSprites,
-      });
-    });
+  });
+
+  button.addEventListener("mouseenter", function (e) {
+    const selectedAttack = attacks[e.currentTarget.innerHTML];
+    document.querySelector("#attackType").innerHTML = selectedAttack.type;
+    document.querySelector("#attackType").style.color = selectedAttack.color;
   });
 });
 
