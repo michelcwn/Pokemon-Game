@@ -7,8 +7,20 @@ const attacks = {
   },
   Fireball: {
     name: "Fireball",
-    damage: 100,
+    damage: 22,
     type: "Fire",
     color: "#cf000f",
+  },
+  PlantSpike: {
+    name: "PlantSpike",
+    damage: 18,
+    type: "Plant",
+    color: "#1e824c",
+  },
+  Kameha: {
+    name: "Kameha",
+    damage: 42,
+    type: "Energy",
+    color: "#0f0ade",
   },
 };

@@ -151,7 +151,7 @@ class Monster extends Sprite {
           image: fireballImage,
           frames: {
             max: 4,
-            hold: 10,
+            hold: 20,
           },
           animate: true,
           rotation,
@@ -159,6 +159,103 @@ class Monster extends Sprite {
         renderedSprites.splice(1, 0, fireball);
 
         gsap.to(fireball.position, {
+          x: recipient.position.x,
+          y: recipient.position.y,
+          onComplete: () => {
+            // Enemy actually gets hit
+            audio.fireballHit.play();
+            gsap.to(healthBar, {
+              width: recipient.health + "%",
+            });
+
+            gsap.to(recipient.position, {
+              x: recipient.position.x + 10,
+              yoyo: true,
+              repeat: 5,
+              duration: 0.08,
+            });
+
+            gsap.to(recipient, {
+              opacity: 0,
+              repeat: 5,
+              yoyo: true,
+              duration: 0.08,
+            });
+            renderedSprites.splice(1, 1);
+          },
+        });
+
+        break;
+      case "PlantSpike":
+        rotation = -0.5;
+        if (this.isEnemy) rotation = 9;
+        audio.initFireball.play();
+        const plantSpikeImage = new Image();
+        plantSpikeImage.src = "./img/plantSpike.png";
+        const plantSpike = new Sprite({
+          position: {
+            x: this.position.x,
+            y: this.position.y,
+          },
+          image: plantSpikeImage,
+          frames: {
+            max: 4,
+            hold: 20,
+          },
+          animate: true,
+          rotation,
+        });
+        renderedSprites.splice(1, 0, plantSpike);
+
+        gsap.to(plantSpike.position, {
+          x: recipient.position.x,
+          y: recipient.position.y,
+          onComplete: () => {
+            // Enemy actually gets hit
+            audio.fireballHit.play();
+            gsap.to(healthBar, {
+              width: recipient.health + "%",
+            });
+
+            gsap.to(recipient.position, {
+              x: recipient.position.x + 10,
+              yoyo: true,
+              repeat: 5,
+              duration: 0.08,
+            });
+
+            gsap.to(recipient, {
+              opacity: 0,
+              repeat: 5,
+              yoyo: true,
+              duration: 0.08,
+            });
+            renderedSprites.splice(1, 1);
+          },
+        });
+
+        break;
+
+      case "Kameha":
+        audio.initFireball.play();
+        const kamehaImage = new Image();
+        kamehaImage.src = "./img/kameha.png";
+        const kameha = new Sprite({
+          position: {
+            x: this.position.x,
+            y: this.position.y,
+          },
+          image: kamehaImage,
+          frames: {
+            max: 4,
+            hold: 20,
+          },
+          animate: true,
+          rotation: 1,
+        });
+        renderedSprites.splice(1, 0, kameha);
+
+        gsap.to(kameha.position, {
           x: recipient.position.x,
           y: recipient.position.y,
           onComplete: () => {
