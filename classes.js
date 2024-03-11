@@ -9,13 +9,13 @@ class Sprite {
     rotation = 0,
   }) {
     this.position = position;
-    this.image = image;
+    this.image = new Image();
     this.frames = { ...frames, val: 0, elapsed: 0 };
-
     this.image.onload = () => {
       this.width = this.image.width / this.frames.max;
       this.height = this.image.height;
     };
+    this.image.src = image.src;
     this.animate = animate;
     this.sprites = sprites;
     this.opacity = 1;
@@ -101,15 +101,14 @@ class Monster extends Sprite {
 
   attack({ attack, recipient, renderedSprites }) {
     document.querySelector("#dialogueBox").style.display = "block";
-    document.querySelector(
-      "#dialogueBox"
-    ).innerHTML = `${this.name} used ${attack.name}`;
+    document.querySelector("#dialogueBox").innerHTML =
+      this.name + " used " + attack.name;
 
     let healthBar = "#enemyHealthBar";
     if (this.isEnemy) healthBar = "#playerHealthBar";
 
     let rotation = 1;
-    if (this.isEnemy) rotation = -2.5;
+    if (this.isEnemy) rotation = -2.2;
 
     recipient.health -= attack.damage;
 
@@ -130,7 +129,6 @@ class Monster extends Sprite {
           animate: true,
           rotation,
         });
-
         renderedSprites.splice(1, 0, fireball);
 
         gsap.to(fireball.position, {
@@ -142,15 +140,20 @@ class Monster extends Sprite {
               width: recipient.health + "%",
             });
 
+            gsap.to(healthBar, {
+              width: recipient.health + "%",
+            });
+
             gsap.to(recipient.position, {
               x: recipient.position.x + 10,
               yoyo: true,
               repeat: 5,
               duration: 0.08,
             });
+
             gsap.to(recipient, {
               opacity: 0,
-              repeat: 7,
+              repeat: 5,
               yoyo: true,
               duration: 0.08,
             });
